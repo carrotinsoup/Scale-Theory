@@ -1,11 +1,12 @@
 package carrot.scaleTheory.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ScaleClass {
 
     private final ScalePhylum scalePhylum;
-    private List<ScaleOrder> orders;
+    private final List<ScaleOrder> orders;
 
     private String name;
     private final int tonalSize;
@@ -13,6 +14,7 @@ public class ScaleClass {
     public ScaleClass(ScalePhylum scalePhylum, int tonalSize) {
         this.scalePhylum = scalePhylum;
         this.tonalSize = tonalSize;
+        this.orders = new ArrayList<>();
     }
 
     public ScalePhylum getScalePhylum() {
@@ -25,10 +27,6 @@ public class ScaleClass {
 
     public List<ScaleOrder> getOrders() {
         return orders;
-    }
-
-    public void setOrders(List<ScaleOrder> orders) {
-        this.orders = orders;
     }
 
     public String getName() {

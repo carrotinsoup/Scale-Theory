@@ -1,11 +1,12 @@
 package carrot.scaleTheory.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ScaleFamily {
 
     private final ScaleOrder scaleOrder;
-    private List<Scale> scales;
+    private final List<Scale> scales;
 
     private String name;
     private final int[] pattern;
@@ -16,6 +17,7 @@ public class ScaleFamily {
     public ScaleFamily(ScaleOrder scaleOrder, int[] pattern) {
         this.scaleOrder = scaleOrder;
         this.pattern = pattern;
+        this.scales = new ArrayList<>();
     }
 
     public ScaleOrder getScaleOrder() {
@@ -32,10 +34,6 @@ public class ScaleFamily {
 
     public List<Scale> getScales() {
         return scales;
-    }
-
-    public void setScales(List<Scale> scales) {
-        this.scales = scales;
     }
 
     public String getName() {

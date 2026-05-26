@@ -24,14 +24,12 @@ public class Generator {
     }
 
     private static void generateClasses(ScalePhylum scalePhylum) {
-        scalePhylum.setClasses(new ArrayList<>());
         for (int i = 1; i <= scalePhylum.getOctaveSize(); i++) {
             scalePhylum.getClasses().add(new ScaleClass(scalePhylum, i));
         }
     }
 
     private static void generateOrders(ScaleClass scaleClass) {
-        scaleClass.setOrders(new ArrayList<>());
         int maxInterval = scaleClass.getOctaveSize() + 1 - scaleClass.getTonalSize();
         generateOrdersRecursive(scaleClass,
                 new int[maxInterval],
@@ -67,7 +65,6 @@ public class Generator {
     }
 
     private static void generateFamilies(ScaleOrder scaleOrder) {
-        scaleOrder.setFamilies(new ArrayList<>());
         generateFamiliesRecursive(scaleOrder,
                 new int[scaleOrder.getTonalSize()],
                 0,
@@ -99,7 +96,6 @@ public class Generator {
     }
 
     private static void generateScales(ScaleFamily scaleFamily) {
-        scaleFamily.setScales(new ArrayList<>());
         int[] pattern = scaleFamily.getPattern();
         for (int i = 0; i < scaleFamily.getTonalSize(); i++) {
             int[] degrees = new int[pattern.length];
