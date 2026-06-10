@@ -2,9 +2,7 @@ package carrot.scaleTheory.seed.generatingScales;
 
 import carrot.scaleTheory.model.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-
 
 public class Generator {
 

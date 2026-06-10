@@ -7,31 +7,74 @@ import java.util.*;
 
 public class FunctionsCalculator12TET {
 
-    private static final int tonicFunctionValue = 4;
-    private static final int tritoneFunctionValue = 4;
+    public static final double DEFAULT_EQUAL_TRITONES_MULTIPLIER = 0.5;
+    public static final double DEFAULT_ADJACENT_FUNCTION_MULTIPLIER = 0.25;
+    public static final double DEFAULT_REVERSED_FUNCTION_MULTIPLIER = 0.25;
+    public static final double DEFAULT_MEDIANT_FUNCTION_MULTIPLIER = 0.5;
 
-    private static final double equalTritonesMultiplier = 0.5;
+    public static final int[] DEFAULT_MEDIANTS_ABOVE = new int[] {3, 4};
+    public static final int[] DEFAULT_MEDIANTS_BELOW = new int[] {3, 4};
 
-    private static final double mediantFunctionMultiplier = 0.5;
-    private static final double adjacentFunctionMultiplier = 0.25;
-    private static final double reversedFunctionMultiplier = 0.25;
+    public final double equalTritonesMultiplier;
+    public final double adjacentFunctionMultiplier;
+    public final double reversedFunctionMultiplier;
+    public final double mediantFunctionMultiplier;
 
-    public static void calculateFunctions(Scale scale) {
-        DegreeFunction[] pureFunctions = calculatePureFunctions(scale.getDegrees());
-        DegreeFunction[] adjacentFunctions = calculateAdjacentFunctions(scale.getDegrees());
-        DegreeFunction[] reversedFunctions = calculateReversedFunctions(scale.getDegrees());
-        Map<Integer, Map<int[], DegreeFunction>> mediantFunctions = calculateMediantFunctions(
-                pureFunctions, new int[] {3, 4}, new int[] {3, 4});
-        //System.out.println();
+    public final int[] mediantsAbove;
+    public final int[] mediantsBelow;
+
+    public FunctionsCalculator12TET() {
+        this.equalTritonesMultiplier = DEFAULT_EQUAL_TRITONES_MULTIPLIER;
+        this.adjacentFunctionMultiplier = DEFAULT_ADJACENT_FUNCTION_MULTIPLIER;
+        this.reversedFunctionMultiplier = DEFAULT_REVERSED_FUNCTION_MULTIPLIER;
+        this.mediantFunctionMultiplier = DEFAULT_MEDIANT_FUNCTION_MULTIPLIER;
+        this.mediantsAbove = DEFAULT_MEDIANTS_ABOVE;
+        this.mediantsBelow = DEFAULT_MEDIANTS_BELOW;
     }
 
-    private static DegreeFunction[] calculatePureFunctions(int[] degrees) {
+    public FunctionsCalculator12TET(double equalTritonesMultiplier, double adjacentFunctionMultiplier,
+                                    double reversedFunctionMultiplier, double mediantFunctionMultiplier,
+                                    int[] mediantsAbove, int[] mediantsBelow) {
+        this.equalTritonesMultiplier = equalTritonesMultiplier;
+        this.adjacentFunctionMultiplier = adjacentFunctionMultiplier;
+        this.reversedFunctionMultiplier = reversedFunctionMultiplier;
+        this.mediantFunctionMultiplier = mediantFunctionMultiplier;
+        this.mediantsAbove = mediantsAbove;
+        this.mediantsBelow = mediantsBelow;
+    }
+
+    public FunctionData calculateFunctions(Scale scale) {
+        FunctionData scaleFunctions = new FunctionData(scale);
+        calculatePureFunctions(scaleFunctions);
+        calculateAdjacentFunctions(scaleFunctions);
+        calculateReversedFunctions(scaleFunctions);
+        calculateMediantFunctions(scaleFunctions);
+        return scaleFunctions;
+    }
+
+    private void calculatePureFunctions(FunctionData functionData) {
+        functionData.setPureFunctions(calculatePureFunctions(functionData.getScale().getDegrees()));
+    }
+
+    private void calculateAdjacentFunctions(FunctionData functionData) {
+        functionData.setAdjacentFunctions(calculateAdjacentFunctions(functionData.getScale().getDegrees()));
+    }
+
+    private void calculateReversedFunctions(FunctionData functionData) {
+        functionData.setReversedFunctions(calculateReversedFunctions(functionData.getScale().getDegrees()));
+    }
+
+    private void calculateMediantFunctions(FunctionData functionData) {
+        functionData.setMediantFunctions(calculateMediantFunctions(functionData.getPureFunctions()));
+    }
+
+    private DegreeFunction[] calculatePureFunctions(int[] degrees) {
         DegreeFunction[] functions = new DegreeFunction[degrees.length];
         for (int i = 0; i < degrees.length; i++) {
             functions[i] = new DegreeFunction(degrees[i]);
         }
 
-        functions[0].setTonicFunction(tonicFunctionValue);
+        functions[0].setAsTonicFunction(1);
 
         List<int[]> tritones = new ArrayList<>();
         int[] tempDegrees = degrees.clone();
@@ -60,18 +103,18 @@ public class FunctionsCalculator12TET {
             if (equalTritones) {
                 for (DegreeFunction function : functions) {
                     if (function.getDegree() == tritone[0] || function.getDegree() == tritone[1]) {
-                        function.setDominantFunction(tritoneFunctionValue * equalTritonesMultiplier);
-                        function.setSubdominantFunction(tritoneFunctionValue * equalTritonesMultiplier);
+                        function.setAsDominantFunction(equalTritonesMultiplier);
+                        function.setAsSubdominantFunction(equalTritonesMultiplier);
                     }
                 }
             }
             else {
                 for (DegreeFunction function : functions) {
                     if (function.getDegree() == tritone[0]) {
-                        function.setSubdominantFunction(tritoneFunctionValue);
+                        function.setAsSubdominantFunction(1);
                     }
                     else if (function.getDegree() == tritone[1]) {
-                        function.setDominantFunction(tritoneFunctionValue);
+                        function.setAsDominantFunction(1);
                     }
                 }
             }
@@ -79,7 +122,7 @@ public class FunctionsCalculator12TET {
         return functions;
     }
 
-    private static DegreeFunction[] calculateAdjacentFunctions(int[] degrees) {
+    private DegreeFunction[] calculateAdjacentFunctions(int[] degrees) {
         DegreeFunction[] functions = new DegreeFunction[degrees.length];
         for (int i = 0; i < degrees.length; i++) {
             functions[i] = new DegreeFunction(degrees[i]);
@@ -102,7 +145,7 @@ public class FunctionsCalculator12TET {
         return functions;
     }
 
-    private static DegreeFunction[] calculateReversedFunctions(int[] degrees) {
+    private DegreeFunction[] calculateReversedFunctions(int[] degrees) {
         DegreeFunction[] functions = new DegreeFunction[degrees.length];
         for (int i = 0; i < degrees.length; i++) {
             functions[i] = new DegreeFunction(degrees[i]);
@@ -114,7 +157,7 @@ public class FunctionsCalculator12TET {
             DegreeFunction[] shiftedFunctions = calculatePureFunctions(shiftedDegrees);
             DegreeFunction reversedFunction;
             for (DegreeFunction shiftedFunction : shiftedFunctions) {
-                if (shiftedFunction.getDegree() == GeneralUtil12TET.octaveSize - degree) {
+                if (shiftedFunction.getDegree() == 12 - degree) {
                     reversedFunction = shiftedFunction;
                     reversedFunction.reverseFunctions();
                     for (DegreeFunction function : functions) {
@@ -128,31 +171,35 @@ public class FunctionsCalculator12TET {
         return functions;
     }
 
-    private static Map<Integer, Map<int[], DegreeFunction>> calculateMediantFunctions(DegreeFunction[] pureFunctions,
-                                                                                      int[] intervalsDown,
-                                                                                      int[] intervalsUp) {
-        Map<Integer, Map<Integer, DegreeFunction>> downMediantFunctions = calculateSideMediantFunctions(pureFunctions,
-                intervalsDown, false);
-        Map<Integer, Map<Integer, DegreeFunction>> upMediantFunctions = calculateSideMediantFunctions(pureFunctions,
-                intervalsUp, true);
+    private EnharmonicFunction[] calculateMediantFunctions(DegreeFunction[] pureFunctions) {
+        Map<Integer, Map<Integer, DegreeFunction>> mediantFunctionsBelow = calculateSideMediantFunctions(pureFunctions,
+                mediantsBelow, false);
+        Map<Integer, Map<Integer, DegreeFunction>> mediantFunctionsAbove = calculateSideMediantFunctions(pureFunctions,
+                mediantsAbove, true);
 
-        Map<Integer, Map<int[], DegreeFunction>> mediantFunctions = new HashMap<>();
-        for (DegreeFunction pureFunction : pureFunctions) {
-            int degree = pureFunction.getDegree();
-            Map<Integer, DegreeFunction> degreeDownFunctions = downMediantFunctions.get(degree);
-            Map<Integer, DegreeFunction> degreeUpFunctions = upMediantFunctions.get(degree);
-            mediantFunctions.put(degree, new HashMap<>());
-            for (int downInterval : degreeDownFunctions.keySet()) {
-                for (int upInterval : degreeUpFunctions.keySet()) {
-                    mediantFunctions.get(degree).put(new int[]{downInterval, upInterval}, DegreeFunction
-                            .sumOfFunctions(degreeDownFunctions.get(downInterval), degreeUpFunctions.get(upInterval)));
+        EnharmonicFunction[] mediantFunctions = new EnharmonicFunction[pureFunctions.length];
+        for (int i = 0; i < pureFunctions.length; i++) {
+            int degree = pureFunctions[i].getDegree();
+            Map<Integer, DegreeFunction> degreeBelowFunctions = mediantFunctionsBelow.get(degree);
+            Map<Integer, DegreeFunction> degreeAboveFunctions = mediantFunctionsAbove.get(degree);
+            mediantFunctions[i] = new EnharmonicFunction(degree);
+            for (int downInterval : degreeBelowFunctions.keySet()) {
+                for (int upInterval : degreeAboveFunctions.keySet()) {
+                    mediantFunctions[i].addFunction(new int[]{downInterval, upInterval}, DegreeFunction
+                            .sumOfFunctions(degreeBelowFunctions.get(downInterval), degreeAboveFunctions.get(upInterval)));
                 }
+            }
+        }
+
+        for (int i = 0; i < mediantFunctions.length; i++) {
+            for (DegreeFunction mediantFunction : mediantFunctions[i].getFunctions().values()) {
+                mediantFunction.addOtherFunction(pureFunctions[i], 1);
             }
         }
         return mediantFunctions;
     }
 
-    private static Map<Integer, Map<Integer, DegreeFunction>> calculateSideMediantFunctions(DegreeFunction[] pureFunctions,
+    private Map<Integer, Map<Integer, DegreeFunction>> calculateSideMediantFunctions(DegreeFunction[] pureFunctions,
                                                                                             int[] intervals,
                                                                                             boolean upOrDown) {
         Map<Integer, Map<Integer, DegreeFunction>> mediantFunctions = new HashMap<>();
@@ -168,7 +215,7 @@ public class FunctionsCalculator12TET {
         return mediantFunctions;
     }
 
-    private static List<DegreeFunction> calculateIntervalMediantFunctions(DegreeFunction[] pureFunctions,
+    private List<DegreeFunction> calculateIntervalMediantFunctions(DegreeFunction[] pureFunctions,
                                                                           int interval,
                                                                           boolean upOrDown) {
         List<DegreeFunction> mediantFunctions = new ArrayList<>();
@@ -180,8 +227,8 @@ public class FunctionsCalculator12TET {
         for (DegreeFunction pureFunction : pureFunctions) {
             for (DegreeFunction function : functions) {
                 int intervalDegree = upOrDown
-                        ? (pureFunction.getDegree() - interval + GeneralUtil12TET.octaveSize) % GeneralUtil12TET.octaveSize
-                        : (pureFunction.getDegree() + interval)% GeneralUtil12TET.octaveSize;
+                        ? (pureFunction.getDegree() - interval + 12) % 12
+                        : (pureFunction.getDegree() + interval) % 12;
                 if (intervalDegree == function.getDegree()) {
                     function.addOtherFunction(pureFunction, mediantFunctionMultiplier);
                     mediantFunctions.add(function);

@@ -1,6 +1,8 @@
-package carrot.scaleTheory.model;
+package carrot.scaleTheory.calculatingFunctions;
 
 public class DegreeFunction {
+
+    public static final double MAX_FUNCTION_VALUE = 100;
 
     private final int degree;
 
@@ -28,16 +30,16 @@ public class DegreeFunction {
         return subdominantFunction;
     }
 
-    public void setTonicFunction(double tonicFunction) {
-        this.tonicFunction = tonicFunction;
+    public void setAsTonicFunction(double multiplier) {
+        this.tonicFunction = MAX_FUNCTION_VALUE * multiplier;
     }
 
-    public void setDominantFunction(double dominantFunction) {
-        this.dominantFunction = dominantFunction;
+    public void setAsDominantFunction(double multiplier) {
+        this.dominantFunction = MAX_FUNCTION_VALUE * multiplier;
     }
 
-    public void setSubdominantFunction(double subdominantFunction) {
-        this.subdominantFunction = subdominantFunction;
+    public void setAsSubdominantFunction(double multiplier) {
+        this.subdominantFunction = MAX_FUNCTION_VALUE * multiplier;
     }
 
     public void addOtherFunction(DegreeFunction other, double multiplier) {
